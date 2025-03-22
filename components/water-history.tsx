@@ -2,8 +2,9 @@
 
 import { useMemo } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Droplet } from "lucide-react"
+import { Droplet, Trash2 } from "lucide-react"
 import { Progress } from "@/components/ui/progress"
+import { Button } from "@/components/ui/button"
 
 interface WaterEntry {
   id: number
@@ -16,9 +17,10 @@ interface WaterEntry {
 interface WaterHistoryProps {
   waterIntake: WaterEntry[]
   dailyGoal: number
+  onDeleteEntry: (entry: WaterEntry) => void
 }
 
-export default function WaterHistory({ waterIntake, dailyGoal }: WaterHistoryProps) {
+export default function WaterHistory({ waterIntake, dailyGoal, onDeleteEntry }: WaterHistoryProps) {
   // Group entries by date
   const groupedByDate = useMemo(() => {
     const grouped = waterIntake.reduce(
@@ -59,50 +61,70 @@ export default function WaterHistory({ waterIntake, dailyGoal }: WaterHistoryPro
 
   if (groupedByDate.length === 0) {
     return (
-      <Card>
+      <Card className="bg-white">
         <CardHeader>
           <CardTitle>Water History</CardTitle>
           <CardDescription>Your water intake history will appear here</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="text-center py-8 text-muted-foreground">No water intake recorded yet. Start drinking!</div>
+          <div className="text-center py-8 text-gray-500">No water intake recorded yet. Start drinking!</div>
         </CardContent>
       </Card>
     )
   }
 
   return (
-    <Card>
+    <Card className="bg-white">
       <CardHeader>
         <CardTitle>Water History</CardTitle>
         <CardDescription>Your recent water intake</CardDescription>
       </CardHeader>
-      <CardContent className="space-y-6">
-        {groupedByDate.map(({ date, entries, total, percentComplete }) => (
-          <div key={date} className="space-y-3">
-            <div className="flex justify-between items-center">
-              <h3 className="font-medium">{formatDate(date)}</h3>
-              <span className="text-sm text-muted-foreground">
-                {total}ml / {dailyGoal}ml
-              </span>
-            </div>
-
-            <Progress value={percentComplete} className="h-2" />
-
-            <div className="space-y-2 mt-2">
-              {entries.slice(0, 5).map((entry) => (
-                <div key={entry.id} className="flex items-center text-sm">
-                  <Droplet className="h-3 w-3 mr-2 text-blue-500" />
-                  <span className="text-muted-foreground">{entry.time}</span>
-                  <span className="ml-auto font-medium">+{entry.amount}ml</span>
+      <CardContent>
+        <div className="space-y-6">
+          {groupedByDate.map(({ date, entries, total, percentComplete }) => (
+            <div key={date} className="border rounded-lg overflow-hidden">
+              <div className="bg-gray-50 p-4 border-b">
+                <div className="flex justify-between items-center">
+                  <h3 className="font-medium">{formatDate(date)}</h3>
+                  <div className="text-sm">
+                    <span className="font-medium">{total}ml</span>
+                    <span className="text-gray-500"> / {dailyGoal}ml</span>
+                  </div>
                 </div>
-              ))}
-              {entries.length > 5 && (
-                <div className="text-xs text-center text-muted-foreground">+ {entries.length - 5} more entries</div>
-              )}
+                <div className="mt-2">
+                  <Progress value={percentComplete} className="h-2" />
+                  <div className="flex justify-between text-xs text-gray-500 mt-1">
+                    <span>{percentComplete}% of daily goal</span>
+                    <span>{entries.length} entries</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="divide-y">
+                {entries.map((entry) => (
+                  <div key={entry.id} className="flex items-center p-3 hover:bg-gray-50">
+                    <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                      <Droplet className="h-4 w-4 text-blue-500" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="font-medium">{entry.amount}ml of water</div>
+                      <div className="text-sm text-gray-500">{entry.time}</div>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="text-gray-400 hover:text-red-500"
+                      onClick={() => onDeleteEntry(entry)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                      <span className="sr-only">Delete entry</span>
+                    </Button>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </CardContent>
     </Card>
   )

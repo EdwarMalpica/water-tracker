@@ -48,11 +48,11 @@ export default function CelebrationAnimation() {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center pointer-events-none z-50">
-      <div className="bg-primary/90 text-primary-foreground rounded-full p-8 animate-bounce shadow-lg">
+      <div className="bg-primary/90 text-primary-foreground rounded-full p-6 md:p-8 animate-bounce shadow-lg">
         <div className="flex flex-col items-center">
-          <Award className="h-12 w-12 mb-2" />
-          <h2 className="text-xl font-bold">Goal Reached!</h2>
-          <p>Great job staying hydrated!</p>
+          <Award className="h-10 w-10 md:h-12 md:w-12 mb-2" />
+          <h2 className="text-lg md:text-xl font-bold">Goal Reached!</h2>
+          <p className="text-sm md:text-base">Great job staying hydrated!</p>
         </div>
       </div>
     </div>
