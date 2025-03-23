@@ -322,58 +322,6 @@ export default function WaterTracker() {
               </div>
             )}
 
-            {/* Tracker */}
-            {activeTab === "tracker" && (
-              <Card className="bg-white">
-                <CardHeader>
-                  <CardTitle>Add Water Intake</CardTitle>
-                  <CardDescription>Track your hydration throughout the day</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span>
-                        Progress: {todayIntake}ml / {dailyGoal}ml
-                      </span>
-                      <span>{percentComplete}%</span>
-                    </div>
-                    <Progress value={percentComplete} className="h-3" />
-                  </div>
-
-                  <div className="py-4">
-                    <h3 className="mb-3 text-sm font-medium">Select cup size:</h3>
-                    <CupSelector cupSizes={CUP_SIZES} selectedCup={selectedCupSize} onSelectCup={setSelectedCupSize} />
-                  </div>
-
-                  <Button className="w-full py-6 text-lg" onClick={() => addWater()} disabled={percentComplete >= 100}>
-                    <Droplet className="mr-2 h-5 w-5" />
-                    {percentComplete >= 100 ? "Goal Reached" : `Add Water (${selectedCupSize.amount}ml)`}
-                  </Button>
-                </CardContent>
-                <CardFooter className="flex flex-col space-y-4">
-                  <Button variant="outline" className="w-full" onClick={resetToday}>
-                    Reset Today
-                  </Button>
-
-                  <div className="w-full space-y-2">
-                    <h3 className="text-sm font-medium">Daily Water Goal (ml):</h3>
-                    <div className="grid grid-cols-4 gap-2">
-                      {[1500, 2000, 2500, 3000].map((goal) => (
-                        <Button
-                          key={goal}
-                          variant={dailyGoal === goal ? "default" : "outline"}
-                          size="sm"
-                          onClick={() => setDailyGoal(goal)}
-                        >
-                          {goal}ml
-                        </Button>
-                      ))}
-                    </div>
-                  </div>
-                </CardFooter>
-              </Card>
-            )}
-
             {/* History */}
             {activeTab === "history" && (
               <WaterHistory waterIntake={waterIntake} dailyGoal={dailyGoal} onDeleteEntry={confirmDelete} />
@@ -386,11 +334,7 @@ export default function WaterTracker() {
       <div className="md:hidden min-h-screen p-4 bg-white">
         <h1 className="text-2xl font-bold text-center mb-4 text-blue-700">Water Tracker</h1>
 
-        <Tabs
-          defaultValue="dashboard"
-          value={activeTab === "dashboard" ? "tracker" : activeTab}
-          onValueChange={setActiveTab}
-        >
+        <Tabs defaultValue="dashboard" value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="dashboard">
               <Home className="h-4 w-4 mr-2" />
@@ -436,12 +380,12 @@ export default function WaterTracker() {
 
                 <div className="w-full space-y-2">
                   <h3 className="text-sm font-medium">Daily Water Goal (ml):</h3>
-                  <div className="flex gap-2">
+                  <div className="grid grid-cols-2 gap-2">
                     {[1500, 2000, 2500, 3000].map((goal) => (
                       <Button
                         key={goal}
                         variant={dailyGoal === goal ? "default" : "outline"}
-                        className="flex-1"
+                        size="sm"
                         onClick={() => setDailyGoal(goal)}
                       >
                         {goal}ml
