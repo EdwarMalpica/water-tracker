@@ -124,8 +124,15 @@ export default function WaterTracker() {
 
   // Undo delete
   const undoDelete = (entry: WaterEntry) => {
-    // Add the entry back to waterIntake
-    setWaterIntake((prev) => [...prev, entry])
+    // Check if the entry already exists in waterIntake
+    setWaterIntake((prev) => {
+      // If the entry already exists, don't add it again
+      if (prev.some((item) => item.id === entry.id)) {
+        return prev
+      }
+      // Otherwise, add it back
+      return [...prev, entry]
+    })
 
     toast({
       title: "Entry restored",
@@ -158,7 +165,7 @@ export default function WaterTracker() {
         {/* Sidebar */}
         <div className="w-64 bg-white border-r border-gray-200 flex flex-col">
           <div className="p-4 border-b">
-            <h1 className="text-xl font-bold text-blue-700">Water Tracker</h1>
+            <h1 className="text-xl font-bold text-black">Water Tracker</h1>
             <p className="text-sm text-gray-600">Stay hydrated, stay healthy</p>
           </div>
 
@@ -332,7 +339,7 @@ export default function WaterTracker() {
 
       {/* Mobile Layout */}
       <div className="md:hidden min-h-screen p-4 bg-white">
-        <h1 className="text-2xl font-bold text-center mb-4 text-blue-700">Water Tracker</h1>
+        <h1 className="text-2xl font-bold text-center mb-4 text-black">Water Tracker</h1>
 
         <Tabs defaultValue="dashboard" value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="grid w-full grid-cols-2">

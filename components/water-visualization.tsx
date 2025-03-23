@@ -24,12 +24,18 @@ export default function WaterVisualization({ percentage, currentAmount, goalAmou
     // Clear canvas
     ctx.clearRect(0, 0, width, height)
 
+    // Adjust glass position to give more space for measurements
+    const glassLeftX = width * 0.3 // Increased from 0.2 to 0.3
+    const glassRightX = width * 0.8
+    const glassWidth = glassRightX - glassLeftX
+    const glassCenterX = glassLeftX + glassWidth / 2
+
     // Draw glass container
     ctx.beginPath()
-    ctx.moveTo(width * 0.2, height * 0.1)
-    ctx.lineTo(width * 0.2, height * 0.9)
-    ctx.lineTo(width * 0.8, height * 0.9)
-    ctx.lineTo(width * 0.8, height * 0.1)
+    ctx.moveTo(glassLeftX, height * 0.1)
+    ctx.lineTo(glassLeftX, height * 0.9)
+    ctx.lineTo(glassRightX, height * 0.9)
+    ctx.lineTo(glassRightX, height * 0.1)
     ctx.strokeStyle = "#94a3b8"
     ctx.lineWidth = 3
     ctx.stroke()
@@ -44,55 +50,62 @@ export default function WaterVisualization({ percentage, currentAmount, goalAmou
     waterGradient.addColorStop(1, "rgba(59, 130, 246, 0.5)")
 
     ctx.fillStyle = waterGradient
-    ctx.fillRect(width * 0.2, waterY, width * 0.6, waterHeight)
+    ctx.fillRect(glassLeftX, waterY, glassWidth, waterHeight)
 
     // Draw water surface with wave effect
     ctx.beginPath()
-    ctx.moveTo(width * 0.2, waterY)
+    ctx.moveTo(glassLeftX, waterY)
 
     const waveHeight = 5
     const segments = 6
-    const segmentWidth = (width * 0.6) / segments
+    const segmentWidth = glassWidth / segments
 
     for (let i = 0; i <= segments; i++) {
-      const x = width * 0.2 + i * segmentWidth
+      const x = glassLeftX + i * segmentWidth
       const y = waterY + (i % 2 === 0 ? -waveHeight : waveHeight)
       ctx.lineTo(x, y)
     }
 
-    ctx.lineTo(width * 0.8, waterY)
-    ctx.lineTo(width * 0.8, height * 0.9)
-    ctx.lineTo(width * 0.2, height * 0.9)
+    ctx.lineTo(glassRightX, waterY)
+    ctx.lineTo(glassRightX, height * 0.9)
+    ctx.lineTo(glassLeftX, height * 0.9)
     ctx.closePath()
 
     ctx.fillStyle = waterGradient
     ctx.fill()
 
-    // Draw measurement lines
+    // Draw measurement lines with correct values
     for (let i = 1; i <= 4; i++) {
       const y = height * 0.9 - height * 0.8 * (i / 4)
+      const measurementValue = Math.round(goalAmount * (i / 4))
 
       ctx.beginPath()
-      ctx.moveTo(width * 0.15, y)
-      ctx.lineTo(width * 0.2, y)
+      ctx.moveTo(glassLeftX - 10, y) // Increased space for measurement line
+      ctx.lineTo(glassLeftX, y)
       ctx.strokeStyle = "#94a3b8"
       ctx.lineWidth = 2
       ctx.stroke()
 
-      // Draw measurement text
+      // Draw measurement text with more space
       ctx.font = "12px sans-serif"
       ctx.fillStyle = "#64748b"
       ctx.textAlign = "right"
-      ctx.fillText(`${Math.round(goalAmount * (i / 4))}ml`, width * 0.14, y + 4)
+      ctx.fillText(`${measurementValue}ml`, glassLeftX - 15, y + 4) // Increased space for text
     }
   }, [percentage, currentAmount, goalAmount])
 
   return (
     <div className="relative">
-      <canvas ref={canvasRef} width={200} height={250} className="mx-auto" />
+      <canvas ref={canvasRef} width={220} height={250} className="mx-auto" />
       <div className="absolute inset-0 flex items-center justify-center">
-        <div className="text-center bg-white bg-opacity-70 px-3 py-1 rounded-lg">
-          <div className="text-3xl font-bold text-blue-700">{percentage}%</div>
+        <div
+          className="text-center bg-white bg-opacity-70 px-4 py-2 rounded-lg"
+          style={{
+            transform: "translateX(10%)", // Shift the percentage display to center it within the glass
+            maxWidth: "90px",
+          }}
+        >
+          <div className={`font-bold text-blue-700 ${percentage === 100 ? "text-2xl" : "text-3xl"}`}>{percentage}%</div>
           <div className="text-sm text-blue-700">{currentAmount}ml</div>
         </div>
       </div>
