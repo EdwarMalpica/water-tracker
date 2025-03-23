@@ -172,14 +172,6 @@ export default function WaterTracker() {
               Dashboard
             </Button>
             <Button
-              variant={activeTab === "tracker" ? "default" : "ghost"}
-              className={`w-full justify-start ${activeTab === "tracker" ? "text-white" : "text-gray-800"}`}
-              onClick={() => setActiveTab("tracker")}
-            >
-              <Droplet className="mr-2 h-4 w-4" />
-              Water Intake
-            </Button>
-            <Button
               variant={activeTab === "history" ? "default" : "ghost"}
               className={`w-full justify-start ${activeTab === "history" ? "text-white" : "text-gray-800"}`}
               onClick={() => setActiveTab("history")}
@@ -395,14 +387,14 @@ export default function WaterTracker() {
         <h1 className="text-2xl font-bold text-center mb-4 text-blue-700">Water Tracker</h1>
 
         <Tabs
-          defaultValue="tracker"
+          defaultValue="dashboard"
           value={activeTab === "dashboard" ? "tracker" : activeTab}
           onValueChange={setActiveTab}
         >
           <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="tracker">
-              <Droplet className="h-4 w-4 mr-2" />
-              Tracker
+            <TabsTrigger value="dashboard">
+              <Home className="h-4 w-4 mr-2" />
+              Dashboard
             </TabsTrigger>
             <TabsTrigger value="history">
               <History className="h-4 w-4 mr-2" />
@@ -410,7 +402,7 @@ export default function WaterTracker() {
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="tracker">
+          <TabsContent value="dashboard">
             <Card className="bg-white">
               <CardHeader>
                 <CardTitle>Daily Water Intake</CardTitle>
