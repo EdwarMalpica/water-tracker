@@ -31,7 +31,6 @@ const CUP_SIZES = [
   { id: "bottle", name: "Bottle", amount: 750, icon: "🧴" },
 ]
 
-// Default daily goal in ml
 const DEFAULT_GOAL = 2000
 
 interface WaterEntry {
@@ -52,7 +51,6 @@ export default function WaterTracker() {
   const [entryToDelete, setEntryToDelete] = useState<WaterEntry | null>(null)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
 
-  // Calculate today's intake
   const today = new Date().toISOString().split("T")[0]
   const todayIntake = waterIntake
     .filter((entry) => entry.date === today)
@@ -60,12 +58,9 @@ export default function WaterTracker() {
 
   const percentComplete = Math.min(Math.round((todayIntake / dailyGoal) * 100), 100)
 
-  // Add water intake
   const addWater = (amount = selectedCupSize.amount, cupType = selectedCupSize.id) => {
-    // Check if adding this amount would exceed the goal
     if (todayIntake >= dailyGoal) {
-      toast({
-        title: "Daily goal already reached",
+      toast("Daily goal already reached", {
         description: "You've already reached your water intake goal for today!",
       })
       return
@@ -84,73 +79,57 @@ export default function WaterTracker() {
 
     const newTodayIntake = todayIntake + amount
 
-    // Check if goal reached for the first time
     if (todayIntake < dailyGoal && newTodayIntake >= dailyGoal) {
       setShowCelebration(true)
       setTimeout(() => setShowCelebration(false), 3000)
     }
   }
 
-  // Confirm delete
   const confirmDelete = (entry: WaterEntry) => {
     setEntryToDelete(entry)
     setIsDeleteDialogOpen(true)
   }
 
-  // Delete water intake entry
   const deleteEntry = () => {
     if (!entryToDelete) return
 
     const deletedEntry = { ...entryToDelete }
 
-    // Remove the entry from waterIntake
     const updatedIntake = waterIntake.filter((entry) => entry.id !== deletedEntry.id)
     setWaterIntake(updatedIntake)
 
-    // Close dialog
     setIsDeleteDialogOpen(false)
 
-    // Show toast with undo option
-    toast({
-      title: "Entry deleted",
+    toast("Entry deleted", {
       description: `Removed ${deletedEntry.amount}ml from your history.`,
-      action: (
-        <Button variant="outline" size="sm" onClick={() => undoDelete(deletedEntry)}>
-          Undo
-        </Button>
-      ),
+      action: {
+        label: "Undo",
+        onClick: () => undoDelete(deletedEntry),
+      },
     })
   }
 
-  // Undo delete
   const undoDelete = (entry: WaterEntry) => {
-    // Check if the entry already exists in waterIntake
     setWaterIntake((prev) => {
-      // If the entry already exists, don't add it again
       if (prev.some((item) => item.id === entry.id)) {
         return prev
       }
-      // Otherwise, add it back
       return [...prev, entry]
     })
 
-    toast({
-      title: "Entry restored",
+    toast("Entry restored", {
       description: `Added ${entry.amount}ml back to your history.`,
     })
   }
 
-  // Reset today's intake
   const resetToday = () => {
     const filteredIntake = waterIntake.filter((entry) => entry.date !== today)
     setWaterIntake(filteredIntake)
-    toast({
-      title: "Reset today's water intake",
+    toast("Reset today's water intake", {
       description: "Starting fresh!",
     })
   }
 
-  // Get recent entries
   const recentEntries = waterIntake
     .filter((entry) => entry.date === today)
     .sort((a, b) => b.id - a.id)
@@ -195,32 +174,32 @@ export default function WaterTracker() {
             {/* Dashboard */}
             {activeTab === "dashboard" && (
               <div className="space-y-6">
-                <div className="grid grid-cols-3 gap-6">
-                  <Card className="col-span-2 bg-white">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                  <Card className="lg:col-span-2 bg-white">
                     <CardHeader className="pb-2">
                       <CardTitle>Today's Progress</CardTitle>
-                      <CardDescription>
+                      <CardDescription suppressHydrationWarning>
                         {percentComplete === 100
                           ? "Congratulations! You've reached your daily goal."
                           : `${percentComplete}% of your daily goal completed`}
                       </CardDescription>
                     </CardHeader>
                     <CardContent>
-                      <div className="flex flex-col lg:flex-row lg:items-end gap-4">
-                        <div className="mx-auto lg:mx-0">
+                      <div className="flex flex-col md:flex-row items-center gap-6">
+                        <div className="w-full md:w-auto flex justify-center">
                           <WaterVisualization
                             percentage={percentComplete}
                             currentAmount={todayIntake}
                             goalAmount={dailyGoal}
                           />
                         </div>
-                        <div className="flex-1 space-y-4">
+                        <div className="flex-1 w-full space-y-4">
                           <div>
-                            <div className="flex justify-between text-sm mb-1">
-                              <span>
+                            <div className="flex justify-between text-sm mb-1" suppressHydrationWarning>
+                              <span suppressHydrationWarning>
                                 Progress: {todayIntake}ml / {dailyGoal}ml
                               </span>
-                              <span>{percentComplete}%</span>
+                              <span suppressHydrationWarning>{percentComplete}%</span>
                             </div>
                             <Progress value={percentComplete} className="h-3" />
                           </div>
@@ -265,23 +244,27 @@ export default function WaterTracker() {
                   </Card>
                 </div>
 
-                <div className="grid grid-cols-3 gap-6">
-                  <Card className="col-span-2 bg-white">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                  <Card className="lg:col-span-2 bg-white">
                     <CardHeader>
                       <CardTitle>Recent Activity</CardTitle>
                       <CardDescription>Your latest water intake entries</CardDescription>
                     </CardHeader>
                     <CardContent>
                       {recentEntries.length > 0 ? (
-                        <div className="space-y-2">
+                        <div className="space-y-2" suppressHydrationWarning>
                           {recentEntries.map((entry) => (
                             <div key={entry.id} className="flex items-center p-2 rounded-md hover:bg-gray-50">
-                              <div className="text-2xl mr-3">
+                              <div className="text-2xl mr-3" suppressHydrationWarning>
                                 {CUP_SIZES.find((cup) => cup.id === entry.cupType)?.icon || "🥤"}
                               </div>
-                              <div className="flex-1">
-                                <div className="font-medium">{entry.amount}ml of water</div>
-                                <div className="text-sm text-gray-500">{entry.time}</div>
+                              <div className="flex-1" suppressHydrationWarning>
+                                <div className="font-medium" suppressHydrationWarning>
+                                  {entry.amount}ml of water
+                                </div>
+                                <div className="text-sm text-gray-500" suppressHydrationWarning>
+                                  {entry.time}
+                                </div>
                               </div>
                               <Button
                                 variant="ghost"
@@ -296,7 +279,7 @@ export default function WaterTracker() {
                           ))}
                         </div>
                       ) : (
-                        <div className="text-center py-6 text-gray-500">
+                        <div className="text-center py-6 text-gray-500" suppressHydrationWarning>
                           No water intake recorded today. Start drinking!
                         </div>
                       )}

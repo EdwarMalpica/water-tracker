@@ -1,16 +1,14 @@
 import type React from "react"
-import { ThemeProvider } from "@/components/theme-provider"
 import "./globals.css"
 import type { Metadata } from "next"
-import { Toaster } from "@/components/toaster"
+import { Toaster } from "@/components/sonner-toaster"
 
 export const metadata: Metadata = {
   title: "Water Intake Tracker",
-  description: "Track your daily water intake and stay hydrated",
   icons: {
     icon: "/icon.png",
   },
-  generator: "v0.dev",
+    generator: 'v0.dev'
 }
 
 export default function RootLayout({
@@ -19,19 +17,12 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className="light">
+    <html lang="en" className="light" style={{ colorScheme: "light" }}>
       <body className="bg-background text-foreground">
-        <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} disableTransitionOnChange>
-          {children}
-          <Toaster />
-        </ThemeProvider>
+        {children}
+        <Toaster />
       </body>
     </html>
   )
 }
 
-import "./globals.css"
-
-
-
-import './globals.css'

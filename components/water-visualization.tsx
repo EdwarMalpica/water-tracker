@@ -18,14 +18,25 @@ export default function WaterVisualization({ percentage, currentAmount, goalAmou
     const ctx = canvas.getContext("2d")
     if (!ctx) return
 
-    const width = canvas.width
-    const height = canvas.height
+    // Make sure canvas is properly sized
+    const dpr = window.devicePixelRatio || 1
+    const rect = canvas.getBoundingClientRect()
+
+    // Set the canvas size to match its display size
+    canvas.width = rect.width * dpr
+    canvas.height = rect.height * dpr
+
+    // Scale the context to ensure correct drawing operations
+    ctx.scale(dpr, dpr)
+
+    const width = rect.width
+    const height = rect.height
 
     // Clear canvas
     ctx.clearRect(0, 0, width, height)
 
     // Adjust glass position to give more space for measurements
-    const glassLeftX = width * 0.3 // Increased from 0.2 to 0.3
+    const glassLeftX = width * 0.3
     const glassRightX = width * 0.8
     const glassWidth = glassRightX - glassLeftX
     const glassCenterX = glassLeftX + glassWidth / 2
@@ -95,18 +106,31 @@ export default function WaterVisualization({ percentage, currentAmount, goalAmou
   }, [percentage, currentAmount, goalAmount])
 
   return (
-    <div className="relative">
-      <canvas ref={canvasRef} width={220} height={250} className="mx-auto" />
+    <div className="relative w-full max-w-[220px]">
+      <canvas
+        ref={canvasRef}
+        width={220}
+        height={250}
+        className="w-full h-auto"
+        style={{ maxWidth: "100%", display: "block" }}
+      />
       <div className="absolute inset-0 flex items-center justify-center">
         <div
-          className="text-center bg-white bg-opacity-70 px-4 py-2 rounded-lg"
+          className="text-center bg-white bg-opacity-70 px-3 py-1 rounded-lg"
           style={{
-            transform: "translateX(10%)", // Shift the percentage display to center it within the glass
+            transform: "translateX(10%)",
             maxWidth: "90px",
           }}
         >
-          <div className={`font-bold text-blue-700 ${percentage === 100 ? "text-2xl" : "text-3xl"}`}>{percentage}%</div>
-          <div className="text-sm text-blue-700">{currentAmount}ml</div>
+          <div
+            className={`font-bold text-blue-700 ${percentage === 100 ? "text-xl" : "text-2xl"}`}
+            suppressHydrationWarning
+          >
+            {percentage}%
+          </div>
+          <div className="text-sm text-blue-700" suppressHydrationWarning>
+            {currentAmount}ml
+          </div>
         </div>
       </div>
     </div>
